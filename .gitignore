@@ -4,3 +4,5 @@
 
 !docs/docsfile
 _quarto_internal_scss_error.scss
+/sales-dashboard/node_modules/
+.DS_Store
