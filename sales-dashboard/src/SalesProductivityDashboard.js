@@ -47,16 +47,6 @@ const AUTOMATION_TASKS = [
     title: 'Salesforce updated with call notes',
     getDesc: () => '3 opportunities automatically synced',
     action: 'View'
-  },
-  {
-    status: 'yellow',
-    title: 'Pricing quote generated',
-    getDesc: (_, persona) => {
-      if (persona === 'CFO') return 'Cost-focused messaging applied';
-      if (persona === 'CIO') return 'ROI calculations included';
-      return persona ? 'Persona-specific pricing' : 'Standard enterprise pricing';
-    },
-    action: 'Send'
   }
 ];
 
@@ -245,6 +235,28 @@ const DEFAULT_PERSONA = {
   ]
 };
 
+// Mapping from competitor products to IBM/Red Hat equivalents
+const COMPETITOR_TO_IBM_EQUIVALENTS = {
+  // AWS
+  "AWS Lambda": ["IBM Cloud Code Engine"],
+  "AWS EC2": ["IBM Virtual Servers", "IBM Power Systems Virtual Server"],
+  "AWS EC2 & S3": ["IBM Virtual Servers", "IBM Cloud Object Storage"],
+  "AWS S3": ["IBM Cloud Object Storage"],
+  "AWS Cost Explorer": ["IBM Turbonomic"],
+  // Azure
+  "Azure SQL": ["IBM Db2", "IBM Cloud Databases for PostgreSQL"],
+  "Microsoft Azure SQL Database": ["IBM Db2", "IBM Cloud Databases for PostgreSQL"],
+  "Azure AKS": ["Red Hat OpenShift"],
+  // Google
+  "Google BigQuery": ["IBM Cloud Pak for Data"],
+  "Google Cloud Run": ["IBM Cloud Code Engine"],
+  // General
+  "Serverless for web portal": ["IBM Cloud Code Engine"],
+  "Transactional database for finance apps": ["IBM Db2"],
+  "Compute and storage for legacy workloads": ["IBM Virtual Servers", "IBM Cloud Object Storage"],
+  "Ad hoc analytics for marketing team": ["IBM Cloud Pak for Data"],
+};
+
 // Static data constants
 const STATIC_METRICS = {
   name: "Fred A",
@@ -331,11 +343,12 @@ const SALES_STAGES = ['Prospecting', 'Qualified', 'Proposal', 'Negotiation', 'Wo
 const TabButton = React.memo(({ id, label, isActive, onClick }) => (
   <button
     onClick={() => onClick(id)}
-    className={`px-6 py-3 text-sm font-medium rounded-lg transition-all ${
+    className={`flex-1 px-6 py-3 text-sm font-medium rounded-lg transition-all ${
       isActive 
         ? 'bg-blue-600 text-white shadow-lg' 
         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
     }`}
+    style={{ minWidth: 0 }}
   >
     {label}
   </button>
@@ -692,16 +705,16 @@ const COLOR_MAP = {
 
 // Daily inspiration quotes for sellers
 const DAILY_QUOTES = [
-  "Success is not final, failure is not fatal: it is the courage to continue that counts. - Winston Churchill",
-  "The only way to do great work is to love what you do. - Steve Jobs",
-  "Every sale has five basic obstacles: no need, no money, no hurry, no desire, no trust. - Zig Ziglar",
-  "The best salespeople don't sell products, they sell solutions. - Unknown",
-  "Your attitude, not your aptitude, will determine your altitude. - Zig Ziglar",
-  "The difference between try and triumph is just a little umph! - Marvin Phillips",
-  "Sales are contingent upon the attitude of the salesperson, not the attitude of the prospect. - W. Clement Stone",
-  "The goal of a salesperson is to help customers buy, not to sell to customers. - Unknown",
-  "Success in sales requires training and discipline and hard work. But if you're not frightened by these things, the opportunities are just as great today as they ever were. - David Rockefeller",
-  "The most important single ingredient in the formula of success is knowing how to get along with people. - Theodore Roosevelt"
+  "I used to do drugs. I still do, but I used to, too.",
+  "I haven't slept for ten days, because that would be too long.",
+  "I wanted to buy a candle holder, but the store didn't have one. So I got a cake.",
+  "Rice is great if you're hungry and want 2000 of something.",
+  "An escalator can never break: it can only become stairs.",
+  "I saw a commercial on late night TV, it said, 'Forget everything you know about slipcovers.' So I did.",
+  "I think Bigfoot is blurry, that's the problem.",
+  "I bought a seven-dollar pen because I always lose pens and I got sick of not caring.",
+  "I used to be a hot-tar roofer. Yeah, I remember that... day.",
+  "I got an ant farm. Them fellas didn't grow anything. Hey, how about some ant corn, you lying bastards?"
 ];
 
 // Get a quote based on the current date (changes daily)
@@ -1086,6 +1099,52 @@ const SalesProductivityDashboard = () => {
     };
   }, [clientName, clientPersona]);
 
+  // Mock data for client interests
+  const MOCK_CLIENT_INTERESTS = [
+    {
+      id: 1,
+      name: "Jane Doe",
+      title: "VP of IT",
+      email: "jane.doe@client.com",
+      phone: "555-123-4567",
+      company: "Acme Corp",
+      product: "IBM Cloud Pak for Data",
+      brand: "IBM",
+      campaign: "AI Modernization Webinar Q2",
+      notes: "Attended webinar, interested in data modernization. Wants follow-up on migration options."
+    },
+    {
+      id: 2,
+      name: "John Smith",
+      title: "Director of Infrastructure",
+      email: "john.smith@client.com",
+      phone: "555-987-6543",
+      company: "Globex Inc",
+      product: "Red Hat OpenShift",
+      brand: "Red Hat",
+      campaign: "Hybrid Cloud Campaign",
+      notes: "Requested a demo. Focused on hybrid cloud orchestration."
+    },
+    {
+      id: 3,
+      name: "Alice Lee",
+      title: "CIO",
+      email: "alice.lee@client.com",
+      phone: "555-555-5555",
+      company: "Initech",
+      product: "IBM Turbonomic",
+      brand: "IBM",
+      campaign: "Cost Optimization Outreach",
+      notes: "Interested in cost savings. Asked for case studies."
+    }
+  ];
+
+  // Email template generator
+  function generateEmail({ name, title, company, product, campaign }) {
+    return `Subject: Thank you for your interest in ${product}\n\nHi ${name},\n\nThank you for your interest in ${product} during our recent \"${campaign}\" campaign. As the ${title} at ${company}, you are in a great position to drive innovation and value with this solution.\n\nI'd love to schedule a quick call to discuss how ${product} can help you achieve your goals. Please let me know your availability, or feel free to reply directly to this email.\n\nBest regards,\n[Your Name]\nIBM & Red Hat Sales Team`;
+  }
+
+
   // Callbacks
   const handleStageChange = useCallback((oppId, newStage) => {
     console.log(`Updating opportunity ${oppId} to stage ${newStage}`);
@@ -1102,6 +1161,101 @@ const SalesProductivityDashboard = () => {
   const toggleClientForm = useCallback(() => {
     setShowClientForm(prev => !prev);
   }, []);
+
+  // State for the Client Interests modal and email
+  const [emailContent, setEmailContent] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalInterest, setModalInterest] = useState(null);
+
+  const handleGenerateEmail = useCallback((interest) => {
+    setEmailContent(generateEmail(interest));
+    setModalInterest(interest);
+    setShowModal(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
+    setModalInterest(null);
+    setEmailContent("");
+  }, []);
+
+  const renderClientInterests = useCallback(() => (
+    <div className="space-y-8">
+      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <Users className="mr-2 text-blue-600" size={24} />
+          Recent Client Interests (ISC)
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-left">
+            <thead>
+              <tr className="text-gray-700 border-b">
+                <th className="py-2 px-4">Contact</th>
+                <th className="py-2 px-4">Title</th>
+                <th className="py-2 px-4">Company</th>
+                <th className="py-2 px-4">Product</th>
+                <th className="py-2 px-4">Brand</th>
+                <th className="py-2 px-4">Campaign</th>
+                <th className="py-2 px-4">Notes</th>
+                <th className="py-2 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MOCK_CLIENT_INTERESTS.map((interest) => (
+                <tr key={interest.id} className="border-b hover:bg-blue-50">
+                  <td className="py-2 px-4">
+                    <div className="font-medium text-blue-800">{interest.name}</div>
+                    <div className="text-xs text-gray-500">{interest.email}<br/>{interest.phone}</div>
+                  </td>
+                  <td className="py-2 px-4">{interest.title}</td>
+                  <td className="py-2 px-4">{interest.company}</td>
+                  <td className="py-2 px-4">{interest.product}</td>
+                  <td className="py-2 px-4">{interest.brand}</td>
+                  <td className="py-2 px-4">{interest.campaign}</td>
+                  <td className="py-2 px-4">{interest.notes}</td>
+                  <td className="py-2 px-4">
+                    <button
+                      className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                      onClick={() => handleGenerateEmail(interest)}
+                    >
+                      Generate Email Outreach
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {/* Modal for email preview */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 max-w-lg w-full">
+            <h4 className="text-lg font-bold text-gray-800 mb-2">Email Outreach Preview</h4>
+            <textarea
+              className="w-full h-48 p-2 border border-gray-300 rounded mb-4 text-sm font-mono"
+              value={emailContent}
+              readOnly
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                onClick={handleCloseModal}
+              >
+                Close
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={() => {navigator.clipboard.writeText(emailContent); handleCloseModal();}}
+              >
+                Copy to Clipboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  ), [showModal, emailContent, handleCloseModal, handleGenerateEmail]);
 
   // Mocked insight fetcher
   const fetchPersonaInsights = (name) => {
@@ -2507,16 +2661,30 @@ const SalesProductivityDashboard = () => {
                   <th className="py-2 px-4">Product</th>
                   <th className="py-2 px-4">Usage Pattern</th>
                   <th className="py-2 px-4">Deployed Since</th>
+                  <th className="py-2 px-4">IBM Equivalent(s)</th>
                 </tr>
               </thead>
               <tbody>
-                {deployedCompetitors.map((prod, i) => (
-                  <tr key={i} className="border-b hover:bg-purple-50">
-                    <td className="py-2 px-4 font-medium text-purple-800">{prod.name}</td>
-                    <td className="py-2 px-4">{prod.usagePattern}</td>
-                    <td className="py-2 px-4">{prod.since}</td>
-                  </tr>
-                ))}
+                {deployedCompetitors.map((prod, i) => {
+                  // Find IBM equivalents by name or usage pattern
+                  const equivalents = COMPETITOR_TO_IBM_EQUIVALENTS[prod.name] || COMPETITOR_TO_IBM_EQUIVALENTS[prod.usagePattern] || [];
+                  return (
+                    <tr key={i} className="border-b hover:bg-purple-50">
+                      <td className="py-2 px-4 font-medium text-purple-800">{prod.name}</td>
+                      <td className="py-2 px-4">{prod.usagePattern}</td>
+                      <td className="py-2 px-4">{prod.since}</td>
+                      <td className="py-2 px-4">
+                        {equivalents.length > 0 ? (
+                          equivalents.map((eq, idx) => (
+                            <span key={idx} className="inline-block bg-blue-100 text-blue-800 rounded px-2 py-1 text-xs font-medium mr-1 mb-1">{eq}</span>
+                          ))
+                        ) : (
+                          <span className="text-gray-400 text-xs">N/A</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -2748,8 +2916,9 @@ const SalesProductivityDashboard = () => {
     productUsage: renderClientProductUsage,
     brandAnalytics: renderBrandAnalytics,
     persona: () => renderPersonaResearch({ personaName, setPersonaName, insights, setInsights }),
-    dailyPlanner: renderDailyPlanner
-  }), [renderOverview, renderPipeline, renderClientIntelligence, renderClientProductUsage, renderBrandAnalytics, personaName, setPersonaName, insights, setInsights, renderPersonaResearch, renderDailyPlanner]);
+    dailyPlanner: renderDailyPlanner,
+    clientInterests: renderClientInterests // <-- Add this line
+  }), [renderOverview, renderPipeline, renderClientIntelligence, renderClientProductUsage, renderBrandAnalytics, personaName, setPersonaName, insights, setInsights, renderPersonaResearch, renderDailyPlanner, renderClientInterests]);
   // ... existing code ...
   // 3. Add new TabButton for Client Product Usage in navigation
   <TabButton 
@@ -2819,7 +2988,7 @@ const SalesProductivityDashboard = () => {
 
       {/* Navigation */}
       <main className="max-w-7xl mx-auto px-6 py-6">
-        <nav className="flex flex-wrap gap-2 mb-6" role="navigation">
+        <nav className="flex flex-nowrap gap-2 mb-6 w-full" role="navigation">
           <TabButton 
             id="overview" 
             label="Overview" 
@@ -2839,12 +3008,6 @@ const SalesProductivityDashboard = () => {
             onClick={setSelectedTab}
           />
           <TabButton 
-            id="brandAnalytics" 
-            label="Brand Analytics" 
-            isActive={selectedTab === 'brandAnalytics'} 
-            onClick={setSelectedTab}
-          />
-          <TabButton 
             id="intelligence" 
             label="Client Intelligence" 
             isActive={selectedTab === 'intelligence'} 
@@ -2856,10 +3019,16 @@ const SalesProductivityDashboard = () => {
             isActive={selectedTab === 'productUsage'} 
             onClick={setSelectedTab}
           />
-          <TabButton 
+          {/* <TabButton 
             id="persona" 
             label="Employee Research" 
             isActive={selectedTab === 'persona'} 
+            onClick={setSelectedTab}
+          /> */}
+          <TabButton 
+            id="clientInterests" 
+            label="Client Interests" 
+            isActive={selectedTab === 'clientInterests'} 
             onClick={setSelectedTab}
           />
         </nav>
