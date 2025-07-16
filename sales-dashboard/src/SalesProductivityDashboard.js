@@ -1002,7 +1002,7 @@ const ENHANCED_PIPELINE_DATA = {
 const ENHANCED_OPPORTUNITIES = [
   {
     id: 1,
-    company: "TechCorp Industries",
+    company: "Global Bank Inc",
     contact: "David Kim, CTO", 
     value: "$450K",
     stage: "Proposal",
@@ -1024,7 +1024,7 @@ const ENHANCED_OPPORTUNITIES = [
   },
   {
     id: 2,
-    company: "Global Finance Ltd",
+    company: "Acme Group",
     contact: "Maria Rodriguez, CISO",
     value: "$320K", 
     stage: "Negotiation",
@@ -1046,7 +1046,7 @@ const ENHANCED_OPPORTUNITIES = [
   },
   {
     id: 3,
-    company: "CloudStart Solutions",
+    company: "Global Bank Inc",
     contact: "Alex Chen, Dev Lead",
     value: "$280K",
     stage: "Qualified",
@@ -1372,529 +1372,356 @@ const SalesProductivityDashboard = () => {
     </div>
   ), []);
 
+  // Enhanced account quota data with primary/secondary quota split and closed opportunities breakdown
+  const ACCOUNT_QUOTA_DATA = [
+    {
+      account: 'Global Bank Inc',
+      primaryQuota: {
+        quota: 1500000,
+        achieved: 1200000,
+        type: 'Transactional/Trans'
+      },
+      secondaryQuota: {
+        quota: 500000,
+        achieved: 300000,
+        type: 'SaaS/Services'
+      },
+      closedOpportunities: [
+        {
+          id: 'GB-001',
+          name: 'Cloud Migration Project',
+          value: 750000,
+          closeDate: '2025-01-15',
+          stage: 'Closed Won',
+          quotaType: 'primary',
+          products: ['Red Hat OpenShift', 'IBM Cloud Pak for Integration']
+        },
+        {
+          id: 'GB-002',
+          name: 'Security Infrastructure Upgrade',
+          value: 450000,
+          closeDate: '2025-02-20',
+          stage: 'Closed Won',
+          quotaType: 'primary',
+          products: ['IBM Security QRadar', 'IBM Security Guardium']
+        },
+        {
+          id: 'GB-003',
+          name: 'DevOps Automation Initiative',
+          value: 300000,
+          closeDate: '2025-03-10',
+          stage: 'Closed Won',
+          quotaType: 'secondary',
+          products: ['Red Hat Ansible Automation', 'IBM Cloud Code Engine']
+        }
+      ],
+      pipelineValue: 730000,
+      activeOpportunities: 2
+    },
+    {
+      account: 'Acme Group',
+      primaryQuota: {
+        quota: 2200000,
+        achieved: 1400000,
+        type: 'Transactional/Trans'
+      },
+      secondaryQuota: {
+        quota: 800000,
+        achieved: 400000,
+        type: 'SaaS/Services'
+      },
+      closedOpportunities: [
+        {
+          id: 'AG-001',
+          name: 'Enterprise Data Platform',
+          value: 900000,
+          closeDate: '2025-01-30',
+          stage: 'Closed Won',
+          quotaType: 'primary',
+          products: ['IBM Cloud Pak for Data', 'Red Hat OpenShift']
+        },
+        {
+          id: 'AG-002',
+          name: 'Hybrid Cloud Infrastructure',
+          value: 600000,
+          closeDate: '2025-02-15',
+          stage: 'Closed Won',
+          quotaType: 'primary',
+          products: ['IBM Cloud', 'Red Hat Enterprise Linux']
+        },
+        {
+          id: 'AG-003',
+          name: 'Cost Optimization Project',
+          value: 300000,
+          closeDate: '2025-03-05',
+          stage: 'Closed Won',
+          quotaType: 'secondary',
+          products: ['IBM Turbonomic', 'Red Hat Insights']
+        }
+      ],
+      pipelineValue: 320000,
+      activeOpportunities: 1
+    }
+  ];
+
   const renderPipeline = useCallback(() => {
-    // Pipeline gap analysis logic
-    const quota = parseFloat(STATIC_METRICS.quota.replace(/[$,]/g, ''));
-    const achieved = parseFloat(STATIC_METRICS.achieved.replace(/[$,]/g, ''));
-    const winRate = 0.68; // 68% as decimal, could be dynamic
-    const gap = Math.max(0, quota - achieved);
-    const requiredPipeline = gap > 0 ? (gap / winRate) : 0;
-
     return (
-      <>
-        {/* Pipeline Gap Analysis Section */}
+      <div className="space-y-6">
+        {/* Quota Attainment by Account */}
         <div className="bg-white rounded-xl p-6 shadow-lg border border-blue-200">
-          <h3 className="text-xl font-bold text-blue-800 mb-2 flex items-center">
+          <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
             <Target className="mr-2 text-blue-600" size={24} />
-            Pipeline Gap Analysis
+            Quota Attainment by Account
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div>
-              <p className="text-gray-700 text-sm mb-1">Quota: <span className="font-semibold">{STATIC_METRICS.quota}</span></p>
-              <p className="text-gray-700 text-sm mb-1">Achieved: <span className="font-semibold">{STATIC_METRICS.achieved}</span></p>
-              <p className="text-gray-700 text-sm mb-1">Historical Win Rate: <span className="font-semibold">{(winRate * 100).toFixed(0)}%</span></p>
-              <p className="text-gray-700 text-sm mb-1">Gap to Quota: <span className="font-semibold">${gap.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></p>
-              <p className="text-blue-700 font-bold text-lg mt-2">Required Additional Pipeline: <span className="text-blue-900">${requiredPipeline.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></p>
-              <p className="text-xs text-gray-500 mt-1">Based on your historical win rate, you need this much more pipeline to hit your quota.</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
-                <div
-                  className="bg-blue-600 h-4 rounded-full transition-all duration-1000"
-                  style={{ width: `${Math.min(100, (achieved / quota) * 100)}%` }}
-                />
-              </div>
-              <p className="text-xs text-gray-600">Quota Attainment Progress</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Pipeline Gap Analysis by Brand and Licensing Type */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Gap Analysis by Brand */}
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-blue-200">
-            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
-              <Award className="mr-2 text-blue-600" size={24} />
-              Gap Analysis by Brand
-            </h3>
-            <div className="space-y-4">
-              {Object.entries(ENHANCED_PIPELINE_DATA.byBrand).map(([brand, stats]) => {
-                const brandQuota = BRAND_QUOTA_TARGETS[brand] || 0;
-                const brandAchieved = stats.value * 1000000;
-                const brandGap = Math.max(0, brandQuota - brandAchieved);
-                const brandRequiredPipeline = brandGap > 0 ? (brandGap / winRate) : 0;
-                const isOnTrack = brandAchieved >= brandQuota;
-                const attainmentPercentage = brandQuota > 0 ? (brandAchieved / brandQuota) * 100 : 0;
-                return (
-                  <div key={brand} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex justify-between items-center mb-3">
-                      <h4 className="font-semibold text-gray-800">{brand}</h4>
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          isOnTrack ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {isOnTrack ? '✓ On Track' : '⚠ Off Track'}
-                        </span>
-                        <span className={`text-sm font-medium ${
-                          isOnTrack ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {attainmentPercentage.toFixed(0)}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Quota Target:</span>
-                        <span className="font-medium">${(brandQuota / 1000000).toFixed(1)}M</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Achieved (Pipeline):</span>
-                        <span className="font-medium">${stats.value}M</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Gap to Quota:</span>
-                        <span className={`font-medium ${
-                          brandGap > 0 ? 'text-red-600' : 'text-green-600'
-                        }`}>
-                          ${(brandGap / 1000000).toFixed(1)}M
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Required Pipeline:</span>
-                        <span className="font-medium">${(brandRequiredPipeline / 1000000).toFixed(1)}M</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
-                      <div 
-                        className={`h-3 rounded-full ${
-                          brand === BRANDS.SOFTWARE ? 'bg-blue-500' : brand === BRANDS.STORAGE ? 'bg-green-500' : brand === BRANDS.POWER ? 'bg-yellow-500' : 'bg-purple-500'
-                        }`}
-                        style={{ width: `${Math.min(100, attainmentPercentage)}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Gap Analysis by Licensing Type */}
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-purple-200">
-            <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center">
-              <DollarSign className="mr-2 text-purple-600" size={24} />
-              Gap Analysis by Licensing Type
-            </h3>
-            <div className="space-y-4">
-              {Object.entries(ENHANCED_PIPELINE_DATA.byLicensingType).map(([type, stats]) => {
-                const typeQuota = LICENSING_QUOTA_TARGETS[type] || 0;
-                const typeAchieved = stats.value * 1000000;
-                const typeGap = Math.max(0, typeQuota - typeAchieved);
-                const typeRequiredPipeline = typeGap > 0 ? (typeGap / winRate) : 0;
-                const isOnTrack = typeAchieved >= typeQuota;
-                const attainmentPercentage = typeQuota > 0 ? (typeAchieved / typeQuota) * 100 : 0;
-                return (
-                  <div key={type} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex justify-between items-center mb-3">
-                      <h4 className="font-semibold text-gray-800">{type}</h4>
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          isOnTrack ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {isOnTrack ? '✓ On Track' : '⚠ Off Track'}
-                        </span>
-                        <span className={`text-sm font-medium ${
-                          isOnTrack ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {attainmentPercentage.toFixed(0)}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Quota Target:</span>
-                        <span className="font-medium">${(typeQuota / 1000000).toFixed(1)}M</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Achieved (Pipeline):</span>
-                        <span className="font-medium">${stats.value}M</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Gap to Quota:</span>
-                        <span className={`font-medium ${
-                          typeGap > 0 ? 'text-red-600' : 'text-green-600'
-                        }`}>
-                          ${(typeGap / 1000000).toFixed(1)}M
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Required Pipeline:</span>
-                        <span className="font-medium">${(typeRequiredPipeline / 1000000).toFixed(1)}M</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
-                      <div 
-                        className={`h-3 rounded-full ${
-                          type === LICENSING_TYPES.PERPETUAL ? 'bg-purple-500' :
-                          type === LICENSING_TYPES.SAAS ? 'bg-orange-500' :
-                          type === LICENSING_TYPES.SUBSCRIPTION ? 'bg-green-500' :
-                          type === LICENSING_TYPES.STORAGE_TRANS ? 'bg-blue-500' :
-                          type === LICENSING_TYPES.POWER_TRANS ? 'bg-yellow-500' :
-                          'bg-pink-500'
-                        }`}
-                        style={{ width: `${Math.min(100, attainmentPercentage)}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Strategic Recommendations */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border border-yellow-200">
-          <h3 className="text-xl font-bold text-yellow-800 mb-4 flex items-center">
-            <Zap className="mr-2 text-yellow-600" size={24} />
-            Strategic Recommendations
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <h4 className="font-semibold text-yellow-800 mb-2">Focus Areas</h4>
-              <ul className="text-sm text-yellow-700 space-y-1">
-                <li>• <strong>Software:</strong> Focus on security and integration deals</li>
-                <li>• <strong>Infrastructure:</strong> Target cloud migration opportunities</li>
-                <li>• <strong>Perpetual:</strong> Large enterprise deals with CAPEX budgets</li>
-                <li>• <strong>SaaS:</strong> Startup and cloud-native companies</li>
-                <li>• <strong>Subscription:</strong> Mid-market hybrid cloud customers</li>
-              </ul>
-            </div>
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <h4 className="font-semibold text-blue-800 mb-2">Quick Wins</h4>
-              <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Upsell existing SaaS customers to subscription</li>
-                <li>• Cross-sell infrastructure to software clients</li>
-                <li>• Convert perpetual prospects to subscription</li>
-                <li>• Target companies with mixed licensing needs</li>
-                <li>• Focus on deals with highest probability to close</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Brand and Licensing Breakdown */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <BrandBreakdownCard data={ENHANCED_PIPELINE_DATA.byBrand} />
-          <LicensingBreakdownCard data={ENHANCED_PIPELINE_DATA.byLicensingType} />
-        </div>
-        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-800 mb-6">Sales Stage Overview</h3>
-          <div className="flex items-center justify-between mb-6">
-            {SALES_STAGES.map((stage, index) => (
-              <div key={stage} className="flex-1 relative">
-                <div className="flex items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                    index < 4 ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'
-                  }`}>
-                    {DEAL_PIPELINE.find(d => d.stage === stage)?.count || 0}
-                  </div>
-                  {index < SALES_STAGES.length - 1 && (
-                    <div className="flex-1 h-1 bg-gray-200 mx-2">
-                      <div className={`h-full ${index < 3 ? 'bg-blue-600' : 'bg-gray-200'}`} 
-                           style={{width: index < 3 ? '100%' : '0%'}}></div>
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-gray-600 mt-2">{stage}</p>
-                <p className="text-xs font-bold text-gray-800">
-                  ${DEAL_PIPELINE.find(d => d.stage === stage)?.value || 0}M
-                </p>
-              </div>
-            ))}
-          </div>
-          
-          <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-gray-800">$7.6M</p>
-              <p className="text-sm text-gray-600">Total Pipeline</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600">15</p>
-              <p className="text-sm text-gray-600">Active Deals</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">68%</p>
-              <p className="text-sm text-gray-600">Win Rate</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold text-gray-800">Top Opportunities</h3>
-          {ENHANCED_OPPORTUNITIES.map((opp) => (
-            <div key={opp.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="p-6 bg-gradient-to-r from-gray-50 to-white">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-xl font-bold text-gray-800">{opp.company}</h4>
-                    <p className="text-gray-600">{opp.contact}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <p className="text-2xl font-bold text-green-600">{opp.value}</p>
-                      <span className="text-sm text-gray-500">Close: {new Date(opp.closeDate).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex gap-2 mt-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        opp.brand === BRANDS.SOFTWARE 
-                          ? 'bg-blue-100 text-blue-800' 
-                          : 'bg-green-100 text-green-800'
-                      }`}>
-                        {opp.brand}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        opp.licensingType === LICENSING_TYPES.PERPETUAL ? 'bg-purple-100 text-purple-800' :
-                        opp.licensingType === LICENSING_TYPES.SAAS ? 'bg-orange-100 text-orange-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
-                        {opp.licensingType}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <select 
-                      value={opp.stage}
-                      onChange={(e) => handleStageChange(opp.id, e.target.value)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium border cursor-pointer ${
-                        opp.stage === 'Negotiation' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                        opp.stage === 'Proposal' ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                        'bg-green-100 text-green-800 border-green-200'
-                      }`}
-                    >
-                      {SALES_STAGES.map(stage => (
-                        <option key={stage} value={stage}>{stage}</option>
-                      ))}
-                    </select>
-                    <p className="text-sm text-gray-500 mt-1">{opp.probability}% probability</p>
-                  </div>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {opp.products.map((product, i) => (
-                    <div key={i} className="flex items-center gap-1 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">
-                      <span>{product.name}</span>
-                      <span className={`w-2 h-2 rounded-full ${
-                        product.brand === BRANDS.SOFTWARE ? 'bg-blue-500' : 'bg-green-500'
-                      }`}></span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {ACCOUNT_QUOTA_DATA.map((acct) => {
+              const totalQuota = acct.primaryQuota.quota + acct.secondaryQuota.quota;
+              const totalAchieved = acct.primaryQuota.achieved + acct.secondaryQuota.achieved;
+              const totalPercent = Math.round((totalAchieved / totalQuota) * 100);
+              const primaryPercent = Math.round((acct.primaryQuota.achieved / acct.primaryQuota.quota) * 100);
+              const secondaryPercent = Math.round((acct.secondaryQuota.achieved / acct.secondaryQuota.quota) * 100);
               
-              <div className="p-6 border-t border-gray-100">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
-                    <h5 className="font-medium text-gray-700 mb-3 flex items-center">
-                      <Brain className="mr-2" size={18} />
-                      AI Insights
-                    </h5>
-                    <ul className="space-y-2">
-                      {opp.aiInsights.map((insight, i) => (
-                        <li key={i} className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-                          {insight}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h5 className="font-medium text-gray-700 mb-3 flex items-center">
-                      <Clock className="mr-2" size={18} />
-                      Client Notes
-                    </h5>
-                    {editingNote === opp.id ? (
-                      <div className="space-y-2">
-                        <textarea
-                          className="w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          rows="4"
-                          placeholder="Add notes about this opportunity..."
-                          value={opportunityNotes[opp.id] || ''}
-                          onChange={(e) => handleNoteChange(opp.id, e.target.value)}
-                        />
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => handleNoteSubmit(opp.id)}
-                            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                          >
-                            Save
-                          </button>
-                          <button 
-                            onClick={() => setEditingNote(null)}
-                            className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300"
-                          >
-                            Cancel
-                          </button>
+              return (
+                <div key={acct.account} className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-gray-800 text-lg mb-3">{acct.account}</h4>
+                    
+                    {/* Total Quota Summary */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
+                        <div className="text-sm text-gray-600">Total Quota</div>
+                        <div className="text-lg font-bold text-gray-800">${totalQuota.toLocaleString()}</div>
+                      </div>
+                      <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
+                        <div className="text-sm text-gray-600">Total Achieved</div>
+                        <div className="text-lg font-bold text-green-600">${totalAchieved.toLocaleString()}</div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-600">Total Attainment:</span>
+                      <span className="font-bold text-blue-700 text-lg">{totalPercent}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                      <div 
+                        className="h-3 rounded-full bg-blue-600 transition-all duration-1000"
+                        style={{ width: `${Math.min(100, totalPercent)}%` }}
+                      />
+                    </div>
+                    
+                    {/* Primary vs Secondary Quota Breakdown */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="text-sm font-medium text-blue-800 mb-2">Primary Quota</div>
+                        <div className="text-xs text-blue-600 mb-1">{acct.primaryQuota.type}</div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Quota:</span>
+                          <span className="font-medium">${acct.primaryQuota.quota.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>Achieved:</span>
+                          <span className="font-medium text-green-600">${acct.primaryQuota.achieved.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs text-blue-600">Attainment:</span>
+                          <span className="font-bold text-blue-700">{primaryPercent}%</span>
+                        </div>
+                        <div className="w-full bg-blue-200 rounded-full h-2">
+                          <div 
+                            className="h-2 rounded-full bg-blue-600 transition-all duration-1000"
+                            style={{ width: `${Math.min(100, primaryPercent)}%` }}
+                          />
                         </div>
                       </div>
-                    ) : (
-                      <div>
-                        {opportunityNotes[opp.id] ? (
-                          <div className="bg-gray-50 p-3 rounded-lg text-sm text-gray-700">
-                            {opportunityNotes[opp.id]}
-                            <button 
-                              onClick={() => setEditingNote(opp.id)}
-                              className="block mt-2 text-blue-600 hover:text-blue-800 text-xs"
-                            >
-                              Edit note
-                            </button>
-                          </div>
-                        ) : (
-                          <button 
-                            onClick={() => setEditingNote(opp.id)}
-                            className="text-sm text-blue-600 hover:text-blue-800"
-                          >
-                            + Add note
-                          </button>
-                        )}
+                      
+                      <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <div className="text-sm font-medium text-purple-800 mb-2">Secondary Quota</div>
+                        <div className="text-xs text-purple-600 mb-1">{acct.secondaryQuota.type}</div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Quota:</span>
+                          <span className="font-medium">${acct.secondaryQuota.quota.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>Achieved:</span>
+                          <span className="font-medium text-green-600">${acct.secondaryQuota.achieved.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs text-purple-600">Attainment:</span>
+                          <span className="font-bold text-purple-700">{secondaryPercent}%</span>
+                        </div>
+                        <div className="w-full bg-purple-200 rounded-full h-2">
+                          <div 
+                            className="h-2 rounded-full bg-purple-600 transition-all duration-1000"
+                            style={{ width: `${Math.min(100, secondaryPercent)}%` }}
+                          />
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-100">
-                  <div className="flex items-center gap-4">
-                    <p className="text-sm text-gray-600">
-                      <strong>Next:</strong> {opp.nextAction}
-                    </p>
-                    <span className="text-xs text-gray-500">Last activity: {opp.lastActivity}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      Update in Salesforce
-                    </button>
-                    <button 
-                      onClick={() => setSelectedOpportunity(opp)}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 flex items-center gap-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      View Full Details
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {selectedOpportunity && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => setSelectedOpportunity(null)}
-          >
-            <div 
-              className="bg-white rounded-xl max-w-3xl w-full max-h-[85vh] overflow-hidden flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white flex-shrink-0">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-800">{selectedOpportunity.company}</h2>
-                    <p className="text-gray-600">{selectedOpportunity.contact}</p>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedOpportunity(null)}
-                    className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <h3 className="font-semibold text-gray-700 mb-3">Opportunity Details</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Value:</span>
-                        <span className="font-semibold text-green-600">{selectedOpportunity.value}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="text-center p-2 bg-blue-50 rounded border border-blue-200">
+                        <div className="text-blue-600 font-medium">Pipeline</div>
+                        <div className="text-blue-800">${acct.pipelineValue.toLocaleString()}</div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Stage:</span>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          selectedOpportunity.stage === 'Negotiation' ? 'bg-yellow-100 text-yellow-800' :
-                          selectedOpportunity.stage === 'Proposal' ? 'bg-blue-100 text-blue-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>{selectedOpportunity.stage}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Probability:</span>
-                        <span className="font-semibold">{selectedOpportunity.probability}%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Close Date:</span>
-                        <span className="font-semibold">{new Date(selectedOpportunity.closeDate).toLocaleDateString()}</span>
+                      <div className="text-center p-2 bg-purple-50 rounded border border-purple-200">
+                        <div className="text-purple-600 font-medium">Active Deals</div>
+                        <div className="text-purple-800">{acct.activeOpportunities}</div>
                       </div>
                     </div>
                   </div>
                   
-                  <div>
-                    <h3 className="font-semibold text-gray-700 mb-3">Products</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedOpportunity.products.map((product, i) => (
-                        <span key={i} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
-                          {product.name}
-                        </span>
+                  {/* Closed Opportunities Breakdown */}
+                  <div className="mt-6">
+                    <h5 className="font-semibold text-gray-700 mb-3 flex items-center">
+                      <span className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-2">
+                        <span className="text-green-600 text-xs font-bold">✓</span>
+                      </span>
+                      Closed Opportunities ({acct.closedOpportunities.length})
+                    </h5>
+                    <div className="space-y-3">
+                      {acct.closedOpportunities.map((opp) => (
+                        <div key={opp.id} className="p-3 bg-white rounded-lg border border-gray-200">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <div className="font-medium text-gray-800 text-sm">{opp.name}</div>
+                              <div className="text-xs text-gray-500">{opp.id}</div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-bold text-green-600">${opp.value.toLocaleString()}</div>
+                              <div className="text-xs text-gray-500">{opp.closeDate}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                              {opp.stage}
+                            </span>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                              opp.quotaType === 'primary' 
+                                ? 'bg-blue-100 text-blue-800' 
+                                : 'bg-purple-100 text-purple-800'
+                            }`}>
+                              {opp.quotaType === 'primary' ? 'Primary' : 'Secondary'}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {opp.products.map((product, idx) => (
+                              <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
+                                {product}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>
                 </div>
-                
-                <div className="mb-6">
-                  <h3 className="font-semibold text-gray-700 mb-3">AI Insights</h3>
-                  <div className="space-y-2">
-                    {selectedOpportunity.aiInsights.map((insight, i) => (
-                      <div key={i} className="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-                        <p className="text-sm text-gray-700">{insight}</p>
-                      </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Active Opportunities */}
+        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <TrendingUp className="mr-2 text-green-600" size={24} />
+            Active Opportunities
+          </h3>
+          <div className="space-y-4">
+            {ENHANCED_OPPORTUNITIES.map((opp) => (
+              <div key={opp.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 className="font-semibold text-gray-800">{opp.company}</h4>
+                    <p className="text-sm text-gray-600">{opp.contact}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-green-600">{opp.value}</div>
+                    <div className="text-sm text-gray-500">{opp.probability}% probability</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-3">
+                  <div className="flex items-center space-x-4">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                      {opp.stage}
+                    </span>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                      {opp.brand}
+                    </span>
+                    <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
+                      {opp.licensingType}
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Close: {opp.closeDate}
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <p className="text-sm text-gray-700"><strong>Next Action:</strong> {opp.nextAction}</p>
+                  <p className="text-sm text-gray-500">Last Activity: {opp.lastActivity}</p>
+                </div>
+                <div className="space-y-2">
+                  <h5 className="text-sm font-semibold text-gray-700">AI Insights:</h5>
+                  <ul className="space-y-1">
+                    {opp.aiInsights.map((insight, idx) => (
+                      <li key={idx} className="text-sm text-gray-600 flex items-start">
+                        <span className="text-blue-500 mr-2">•</span>
+                        {insight}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-3">
+                  <h5 className="text-sm font-semibold text-gray-700 mb-2">Products:</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {opp.products.map((product, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs">
+                        {product.name}
+                      </span>
                     ))}
                   </div>
                 </div>
-                
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-3">Notes</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-700">{opportunityNotes[selectedOpportunity.id] || 'No notes added yet.'}</p>
-                  </div>
-                </div>
               </div>
-              
-              <div className="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
-                <div className="flex justify-end gap-3">
-                  <button 
-                    onClick={() => setSelectedOpportunity(null)}
-                    className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
-                  >
-                    Close
-                  </button>
-                  <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
-                    Open in Salesforce
-                  </button>
-                </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Pipeline Insights */}
+        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <Brain className="mr-2 text-purple-600" size={24} />
+            Pipeline Insights
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-blue-800 mb-2">Total Pipeline Value</h4>
+              <div className="text-2xl font-bold text-blue-600">
+                ${ENHANCED_OPPORTUNITIES.reduce((sum, opp) => sum + parseInt(opp.value.replace(/[$,]/g, '')), 0).toLocaleString()}K
               </div>
+              <p className="text-sm text-blue-600 mt-1">Across {ENHANCED_OPPORTUNITIES.length} opportunities</p>
+            </div>
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-800 mb-2">Average Probability</h4>
+              <div className="text-2xl font-bold text-green-600">
+                {Math.round(ENHANCED_OPPORTUNITIES.reduce((sum, opp) => sum + opp.probability, 0) / ENHANCED_OPPORTUNITIES.length)}%
+              </div>
+              <p className="text-sm text-green-600 mt-1">Weighted pipeline value</p>
+            </div>
+            <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+              <h4 className="font-semibold text-purple-800 mb-2">Next 30 Days</h4>
+              <div className="text-2xl font-bold text-purple-600">
+                {ENHANCED_OPPORTUNITIES.filter(opp => {
+                  const closeDate = new Date(opp.closeDate);
+                  const thirtyDaysFromNow = new Date();
+                  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+                  return closeDate <= thirtyDaysFromNow;
+                }).length}
+              </div>
+              <p className="text-sm text-purple-600 mt-1">Opportunities closing</p>
             </div>
           </div>
-        )}
-      </>
+        </div>
+      </div>
     );
-  }, [opportunityNotes, editingNote, selectedOpportunity, handleStageChange, handleNoteChange, handleNoteSubmit]);
+  }, []);
 
   const renderClientIntelligence = useCallback(() => {
     // Fetch company intelligence if a company is selected
@@ -2945,11 +2772,10 @@ const SalesProductivityDashboard = () => {
                   <Zap className="text-white" size={20} />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-800">{STATIC_METRICS.name} AI Assistant</h1>
-                  <p className="text-sm text-gray-500">Welcome back, {STATIC_METRICS.name}</p>
+                  <h1 className="text-2xl font-bold text-gray-800">ROME</h1>
+                  <p className="text-sm text-gray-500">Welcome back, {STATIC_METRICS.name}!</p>
                 </div>
               </div>
-              <span className="hidden md:inline text-sm text-gray-500">IBM & Red Hat Sales Productivity Suite</span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="relative">
