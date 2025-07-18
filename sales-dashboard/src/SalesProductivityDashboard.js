@@ -2837,15 +2837,8 @@ const SalesProductivityDashboard = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Zap className="text-white" size={20} />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-800">ROME</h1>
-                  <p className="text-sm text-gray-500">Welcome back, {STATIC_METRICS.name}!</p>
-                </div>
-              </div>
+              {/* Logo */}
+              <img src="/rome-logo.png" alt="ROME AI Sales Platform" style={{ height: 80 }} className="mr-4" />
             </div>
             <div className="flex items-center space-x-4">
               <div className="relative">
