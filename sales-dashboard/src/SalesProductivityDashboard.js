@@ -705,7 +705,7 @@ const COLOR_MAP = {
 
 // Daily inspiration quotes for sellers
 const DAILY_QUOTES = [
-  "I used to do drugs. I still do, but I used to, too.",
+  "Dogs are always in the pushup position.",
   "I haven't slept for ten days, because that would be too long.",
   "I wanted to buy a candle holder, but the store didn't have one. So I got a cake.",
   "Rice is great if you're hungry and want 2000 of something.",
@@ -714,7 +714,7 @@ const DAILY_QUOTES = [
   "I think Bigfoot is blurry, that's the problem.",
   "I bought a seven-dollar pen because I always lose pens and I got sick of not caring.",
   "I used to be a hot-tar roofer. Yeah, I remember that... day.",
-  "I got an ant farm. Them fellas didn't grow anything. Hey, how about some ant corn, you lying bastards?"
+  "I had a paper route when I was a kid. I was supposed to go to 2,000 houses. Or two dumpsters",
 ];
 
 // Get a quote based on the current date (changes daily)
@@ -1081,6 +1081,8 @@ const SalesProductivityDashboard = () => {
   const [editingNote, setEditingNote] = useState(null);
   const [personaName, setPersonaName] = useState('');
   const [insights, setInsights] = useState(null);
+  const [showAllIBM, setShowAllIBM] = useState(false);
+  const [showAllCompetitors, setShowAllCompetitors] = useState(false);
 
   // Clock timer with cleanup
   useEffect(() => {
@@ -2391,57 +2393,98 @@ const SalesProductivityDashboard = () => {
     const companyData = {
       "Acme Corp": {
         deployedIBMRedHat: [
-          { name: "IBM Turbonomic", usagePattern: "Optimizing cloud spend for SAP workloads", revenue: "$420,000 (2024 YTD)", since: "2021" },
-          { name: "Red Hat OpenShift", usagePattern: "Container platform for digital banking apps", revenue: "$310,000 (2024 YTD)", since: "2020" }
+          { name: "IBM Turbonomic", usagePattern: "Optimizing cloud spend for SAP workloads", assignedRevenue: 500000, deployedRevenue: 420000, lastDeploymentReport: "2024-04-10", since: "2021" },
+          { name: "Red Hat OpenShift", usagePattern: "Container platform for digital banking apps", assignedRevenue: 350000, deployedRevenue: 310000, lastDeploymentReport: "2024-04-12", since: "2020" },
+          { name: "IBM Cloud Pak for Integration", usagePattern: "Integrating legacy and cloud apps", assignedRevenue: 200000, deployedRevenue: 180000, lastDeploymentReport: "2024-04-15", since: "2022" },
+          { name: "Red Hat Ansible Automation", usagePattern: "Automating IT operations", assignedRevenue: 120000, deployedRevenue: 100000, lastDeploymentReport: "2024-04-16", since: "2023" }
         ],
         deployedCompetitors: [
           { name: "AWS Lambda", usagePattern: "Serverless for web portal", since: "2022" },
-          { name: "Azure SQL", usagePattern: "Legacy database for HR", since: "2019" }
+          { name: "Azure SQL", usagePattern: "Legacy database for HR", since: "2019" },
+          { name: "Google BigQuery", usagePattern: "Analytics for marketing", since: "2023" },
+          { name: "AWS EC2", usagePattern: "Compute for dev/test", since: "2020" }
         ]
       },
       "Globex Inc": {
         deployedIBMRedHat: [
-          { name: "IBM Cloud Pak for Data", usagePattern: "Data science and analytics", revenue: "$180,000 (2024 YTD)", since: "2022" },
-          { name: "Red Hat Ansible", usagePattern: "Automating network config", revenue: "$90,000 (2024 YTD)", since: "2023" }
+          { name: "IBM Cloud Pak for Data", usagePattern: "Data science and analytics", assignedRevenue: 200000, deployedRevenue: 180000, lastDeploymentReport: "2024-04-08", since: "2022" },
+          { name: "Red Hat Ansible", usagePattern: "Automating network config", assignedRevenue: 100000, deployedRevenue: 90000, lastDeploymentReport: "2024-04-09", since: "2023" },
+          { name: "IBM Security QRadar", usagePattern: "Threat detection and response", assignedRevenue: 150000, deployedRevenue: 120000, lastDeploymentReport: "2024-04-17", since: "2021" },
+          { name: "Red Hat Enterprise Linux", usagePattern: "Enterprise OS for workloads", assignedRevenue: 80000, deployedRevenue: 70000, lastDeploymentReport: "2024-04-18", since: "2020" }
         ],
         deployedCompetitors: [
           { name: "Google BigQuery", usagePattern: "Marketing analytics", since: "2023" },
-          { name: "AWS EC2", usagePattern: "Compute for dev/test", since: "2020" }
+          { name: "AWS EC2", usagePattern: "Compute for dev/test", since: "2020" },
+          { name: "Microsoft Azure SQL Database", usagePattern: "Transactional DB for finance", since: "2021" },
+          { name: "AWS S3", usagePattern: "Object storage for backups", since: "2019" }
         ]
       }
     };
 
     // Fallback to generic mock data if company not in mock DB
     const deployedIBMRedHat = (companyData[clientName]?.deployedIBMRedHat) || [
-      { name: "IBM Turbonomic", usagePattern: "Automated cloud resource optimization, daily workload balancing", revenue: "$320,000 (2024 YTD)", since: "2022" },
-      { name: "Red Hat OpenShift", usagePattern: "Container orchestration for 12+ microservices, hybrid cloud", revenue: "$210,000 (2024 YTD)", since: "2021" },
-      { name: "IBM Cloud Pak for Data", usagePattern: "Data integration and AI/ML pipeline for analytics team", revenue: "$150,000 (2024 YTD)", since: "2023" }
+      { name: "IBM Turbonomic", usagePattern: "Automated cloud resource optimization, daily workload balancing", assignedRevenue: 400000, deployedRevenue: 320000, lastDeploymentReport: "2024-04-11", since: "2022" },
+      { name: "Red Hat OpenShift", usagePattern: "Container orchestration for 12+ microservices, hybrid cloud", assignedRevenue: 250000, deployedRevenue: 210000, lastDeploymentReport: "2024-04-13", since: "2021" },
+      { name: "IBM Cloud Pak for Data", usagePattern: "Data integration and AI/ML pipeline for analytics team", assignedRevenue: 180000, deployedRevenue: 150000, lastDeploymentReport: "2024-04-14", since: "2023" },
+      { name: "Red Hat Ansible Automation", usagePattern: "Automating IT operations", assignedRevenue: 100000, deployedRevenue: 80000, lastDeploymentReport: "2024-04-19", since: "2023" }
     ];
     const deployedCompetitors = (companyData[clientName]?.deployedCompetitors) || [
       { name: "AWS EC2 & S3", usagePattern: "Compute and storage for legacy workloads", since: "2018" },
       { name: "Microsoft Azure SQL Database", usagePattern: "Transactional database for finance apps", since: "2020" },
-      { name: "Google BigQuery", usagePattern: "Ad hoc analytics for marketing team", since: "2023" }
+      { name: "Google BigQuery", usagePattern: "Ad hoc analytics for marketing team", since: "2023" },
+      { name: "AWS Lambda", usagePattern: "Serverless for web portal", since: "2022" }
     ];
 
-    // Mock: Recommendations to displace competition
-    const recommendations = [
-      {
-        name: "IBM Cloud Pak for Integration",
-        keyPoints: [
-          "Unified platform for all integration needs (vs. fragmented AWS/Azure tools)",
-          "AI-powered mapping reduces integration time by 50%",
-          "Hybrid and multi-cloud support with Red Hat OpenShift"
-        ]
-      },
-      {
-        name: "Red Hat Ansible Automation",
-        keyPoints: [
-          "Agentless automation (vs. Puppet/Chef complexity)",
-          "Faster onboarding and 5000+ pre-built modules",
-          "Integrated with OpenShift and IBM Cloud"
-        ]
+    // Show more/less state for IBM and competitor products
+    const visibleIBM = showAllIBM ? deployedIBMRedHat : deployedIBMRedHat.slice(0, 2);
+    const visibleCompetitors = showAllCompetitors ? deployedCompetitors : deployedCompetitors.slice(0, 2);
+
+    // Dynamically generate recommendations based on deployed competitors
+    const recommendedProducts = [];
+    const recommendedNames = new Set();
+    deployedCompetitors.forEach((prod) => {
+      const equivalents = COMPETITOR_TO_IBM_EQUIVALENTS[prod.name] || COMPETITOR_TO_IBM_EQUIVALENTS[prod.usagePattern] || [];
+      equivalents.forEach(eq => {
+        if (!recommendedNames.has(eq)) {
+          // Try to find product details from ENHANCED_PRODUCTS or fallback
+          let productDetail = null;
+          for (const persona in ENHANCED_PRODUCTS) {
+            const found = ENHANCED_PRODUCTS[persona].find(p => p.name === eq);
+            if (found) { productDetail = found; break; }
+          }
+          recommendedProducts.push({
+            name: eq,
+            rationale: `Recommended to displace ${prod.name}`,
+            description: productDetail?.description || '',
+            differentiator: productDetail?.differentiators?.[0] || '',
+            alignment: productDetail?.alignment || ''
+          });
+          recommendedNames.add(eq);
+        }
+      });
+    });
+    // Limit to top 2, ensure unique differentiators and richer descriptions
+    const topRecommended = recommendedProducts.slice(0, 2).map((rec, idx, arr) => {
+      // Find a unique differentiator for each product
+      let productDetail = null;
+      for (const persona in ENHANCED_PRODUCTS) {
+        const found = ENHANCED_PRODUCTS[persona].find(p => p.name === rec.name);
+        if (found) { productDetail = found; break; }
       }
-    ];
+      // Pick a different differentiator for each product if possible
+      let differentiator = productDetail?.differentiators?.[0] || '';
+      if (arr.length > 1 && idx === 1 && productDetail?.differentiators?.length > 1) {
+        // Try to pick a different differentiator for the second product
+        differentiator = productDetail.differentiators[1];
+      }
+      // Compose a richer, more tailored description
+      let detailedDescription = '';
+      detailedDescription += `${rec.name} is ${productDetail?.description || 'an IBM/Red Hat solution'} designed to help organizations ${productDetail?.alignment?.toLowerCase() || 'modernize and optimize their IT environment'}. `;
+      detailedDescription += `This product is especially relevant for clients currently using ${rec.rationale.replace('Recommended to displace ', '')}, as it addresses common pain points such as ${differentiator.replace(/^vs [^:]+: /, '').split(' with ')[0] || 'integration, cost, and scalability'}. `;
+      detailedDescription += `A key differentiator: ${differentiator}. `;
+      detailedDescription += `By adopting ${rec.name}, clients can expect outcomes like improved efficiency, reduced costs, and a future-proofed technology stack. Now is an ideal time to consider this transition, as many organizations are seeking to maximize ROI and reduce vendor lock-in.`;
+      return { ...rec, detailedDescription, differentiator };
+    });
 
     return (
       <div className="space-y-8">
@@ -2458,20 +2501,37 @@ const SalesProductivityDashboard = () => {
                   <th className="py-2 px-4">Product</th>
                   <th className="py-2 px-4">Usage Pattern</th>
                   <th className="py-2 px-4">Deployed Since</th>
-                  <th className="py-2 px-4">Historical Revenue</th>
+                  <th className="py-2 px-4">Assigned Revenue</th>
+                  <th className="py-2 px-4">Deployed Revenue</th>
+                  <th className="py-2 px-4">% Deployed</th>
+                  <th className="py-2 px-4">Last Deployment Report</th>
                 </tr>
               </thead>
               <tbody>
-                {deployedIBMRedHat.map((prod, i) => (
-                  <tr key={i} className="border-b hover:bg-blue-50">
-                    <td className="py-2 px-4 font-medium text-blue-800">{prod.name}</td>
-                    <td className="py-2 px-4">{prod.usagePattern}</td>
-                    <td className="py-2 px-4">{prod.since}</td>
-                    <td className="py-2 px-4">{prod.revenue}</td>
-                  </tr>
-                ))}
+                {visibleIBM.map((prod, i) => {
+                  const percent = prod.assignedRevenue && prod.deployedRevenue ? Math.round((prod.deployedRevenue / prod.assignedRevenue) * 100) : null;
+                  return (
+                    <tr key={i} className="border-b hover:bg-blue-50">
+                      <td className="py-2 px-4 font-medium text-blue-800">{prod.name}</td>
+                      <td className="py-2 px-4">{prod.usagePattern}</td>
+                      <td className="py-2 px-4">{prod.since}</td>
+                      <td className="py-2 px-4">{prod.assignedRevenue ? `$${prod.assignedRevenue.toLocaleString()}` : '-'}</td>
+                      <td className="py-2 px-4">{prod.deployedRevenue ? `$${prod.deployedRevenue.toLocaleString()}` : '-'}</td>
+                      <td className="py-2 px-4">{percent !== null ? `${percent}%` : '-'}</td>
+                      <td className="py-2 px-4">{prod.lastDeploymentReport || '-'}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
+            <div className="mt-2 flex justify-end">
+              <button
+                className="text-blue-600 text-xs font-medium underline hover:text-blue-800 focus:outline-none"
+                onClick={() => setShowAllIBM(v => !v)}
+              >
+                {showAllIBM ? 'Show less' : 'Show more'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2492,8 +2552,7 @@ const SalesProductivityDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {deployedCompetitors.map((prod, i) => {
-                  // Find IBM equivalents by name or usage pattern
+                {visibleCompetitors.map((prod, i) => {
                   const equivalents = COMPETITOR_TO_IBM_EQUIVALENTS[prod.name] || COMPETITOR_TO_IBM_EQUIVALENTS[prod.usagePattern] || [];
                   return (
                     <tr key={i} className="border-b hover:bg-purple-50">
@@ -2514,6 +2573,14 @@ const SalesProductivityDashboard = () => {
                 })}
               </tbody>
             </table>
+            <div className="mt-2 flex justify-end">
+              <button
+                className="text-purple-600 text-xs font-medium underline hover:text-purple-800 focus:outline-none"
+                onClick={() => setShowAllCompetitors(v => !v)}
+              >
+                {showAllCompetitors ? 'Show less' : 'Show more'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2524,21 +2591,24 @@ const SalesProductivityDashboard = () => {
             Recommended IBM & Red Hat Products to Displace Competition
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {recommendations.map((rec, i) => (
-              <div key={i} className="bg-green-50 rounded-lg p-4 border border-green-200">
-                <h4 className="font-semibold text-green-800">{rec.name}</h4>
-                <ul className="list-disc ml-6 mt-2 text-xs text-gray-700">
-                  {rec.keyPoints.map((point, j) => (
-                    <li key={j} className="mb-1">{point}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {topRecommended.length === 0 ? (
+              <div className="text-gray-500 italic">No direct IBM/Red Hat equivalents found for current competitor products.</div>
+            ) : (
+              topRecommended.map((rec, i) => (
+                <div key={i} className="bg-green-50 rounded-lg p-4 border border-green-200 flex flex-col space-y-2">
+                  <h4 className="font-semibold text-green-800 text-lg mb-1">{rec.name}</h4>
+                  {rec.detailedDescription && <p className="text-sm text-gray-700 mb-1">{rec.detailedDescription}</p>}
+                  {rec.differentiator && <div className="border-l-4 border-blue-300 pl-3 text-xs text-blue-700 mb-1"><span className="font-semibold">Key differentiator:</span> {rec.differentiator}</div>}
+                  {rec.alignment && <div className="border-l-4 border-green-300 pl-3 text-xs text-green-700 mb-1"><span className="font-semibold">How it helps:</span> {rec.alignment}</div>}
+                  <div className="border-t border-green-100 pt-2 mt-2 text-xs text-gray-700">{rec.rationale}</div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
     );
-  }, [competitorProducts]);
+  }, [clientName, showAllIBM, showAllCompetitors]);
   // ... existing code ...
   // 2. Add new tab to tabContent
   const [plannerTasks, setPlannerTasks] = useState([
